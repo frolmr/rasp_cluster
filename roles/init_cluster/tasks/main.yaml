@@ -1,0 +1,20 @@
+- name: initialize the cluster
+  become: yes
+  shell: kubeadm init --pod-network-cidr=10.244.0.0/16
+
+- name: create .kube directory
+  file:
+    path: "/home/{{ lookup('env','USER') }}/.kube"
+    state: directory
+    mode: 0755
+
+- name: copy admin.conf to user's kube config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/home/{{ lookup('env','USER') }}/.kube/config"
+    remote_src: yes
+    owner: "{{ lookup('env','USER') }}"
+  become: yes
+
+- name: install pod network add-on
+  shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml

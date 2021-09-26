@@ -1,0 +1,6 @@
+[master_host]
+192.168.88.50 hostname=master
+[workers]
+192.168.88.51 hostname=worker1
+192.168.88.52 hostname=worker2
+192.168.88.53 hostname=worker3

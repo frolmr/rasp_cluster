@@ -1,0 +1,24 @@
+# vars_prompt:
+#   - name: "set_creds"
+#     prompt: "Ansible command: `--ask-become-pass --ask-pass -u ubuntu`\nLogged in, changed the password (yes/no)?"
+#     private: no
+  # - name: "user_password"
+  #   prompt: "Enter password for new user"
+  #   private: yes
+  #   encrypt: "sha512_crypt"
+  #   confirm: yes
+  #   salt_size: 7
+tasks:
+- name: Add the user "{{ lookup('env','USER') }}" with a bash shell, appending the group 'sudo' to the user's groups
+  user:
+    name:  "{{ lookup('env','USER') }}"
+    shell: /bin/bash
+    groups: sudo
+    append: yes
+    password: "{{ lookup('env','SECRET_USER_PASSWORD') | password_hash('sha512') }}"
+
+- name: Set authorized key taken from file
+  authorized_key:
+    user: "{{ lookup('env','USER') }}"
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
